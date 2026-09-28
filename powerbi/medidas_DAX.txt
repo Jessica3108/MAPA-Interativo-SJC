@@ -1,0 +1,90 @@
+// =====================================================================
+// GeoSJC — medidas DAX
+// Onde criar: Modelagem > Nova medida (ou botão direito em
+// fato_estabelecimentos > Nova medida). Cole UMA medida por vez.
+// Dica: crie uma tabela vazia "_Medidas" (Página Inicial > Inserir dados >
+// Carregar) e guarde as medidas nela para ficarem organizadas.
+// =====================================================================
+
+// ---------- Contagens básicas
+Estabelecimentos = COUNTROWS ( fato_estabelecimentos )
+
+Empregos = SUM ( fato_estabelecimentos[vinculos_ativos] )
+
+Empregos CLT = SUM ( fato_estabelecimentos[vinculos_clt] )
+
+Empregos estatutários = SUM ( fato_estabelecimentos[vinculos_estatutarios] )
+
+Estab. com empregados =
+CALCULATE ( [Estabelecimentos], fato_estabelecimentos[com_empregados] = 1 )
+
+Estab. sem empregados =
+CALCULATE ( [Estabelecimentos], fato_estabelecimentos[com_empregados] = 0 )
+
+// ---------- Proporções (formate como Porcentagem)
+% com empregados = DIVIDE ( [Estab. com empregados], [Estabelecimentos] )
+
+% optantes do Simples =
+DIVIDE (
+    CALCULATE ( [Estabelecimentos], fato_estabelecimentos[optante_simples] = 1 ),
+    [Estabelecimentos]
+)
+
+// Participação no total que está na tela (respeita segmentações/filtros de página)
+% dos estabelecimentos =
+DIVIDE ( [Estabelecimentos], CALCULATE ( [Estabelecimentos], ALLSELECTED () ) )
+
+% dos empregos =
+DIVIDE ( [Empregos], CALCULATE ( [Empregos], ALLSELECTED () ) )
+
+// Participação no total do município, ignorando qualquer filtro
+% do município (empregos) =
+DIVIDE ( [Empregos], CALCULATE ( [Empregos], ALL ( fato_estabelecimentos ) ) )
+
+// ---------- Médias
+Empregos por estab. (com empregados) =
+DIVIDE ( [Empregos], [Estab. com empregados] )
+
+Maior estabelecimento (empregos) = MAX ( fato_estabelecimentos[vinculos_ativos] )
+
+// ---------- Rankings (use em tabelas ou no filtro "Top N")
+Ranking atividade (estab.) =
+RANKX ( ALLSELECTED ( dim_atividade[atividade] ), [Estabelecimentos], , DESC, DENSE )
+
+Ranking atividade (empregos) =
+RANKX ( ALLSELECTED ( dim_atividade[atividade] ), [Empregos], , DESC, DENSE )
+
+Ranking bairro (empregos) =
+RANKX ( ALLSELECTED ( dim_cep[bairro] ), [Empregos], , DESC, DENSE )
+
+// ---------- Concentração: quanto as 10 maiores atividades somam do total
+Top 10 atividades (% empregos) =
+VAR top10 =
+    TOPN ( 10, ALLSELECTED ( dim_atividade[atividade] ), [Empregos], DESC )
+RETURN
+    DIVIDE ( CALCULATE ( [Empregos], top10 ), CALCULATE ( [Empregos], ALLSELECTED ( dim_atividade[atividade] ) ) )
+
+// ---------- Textos dinâmicos (use em Cartão para títulos e rodapés)
+Título filtro setor =
+IF (
+    ISFILTERED ( dim_subsetor[grande_setor] ),
+    "Setor: " & CONCATENATEX ( VALUES ( dim_subsetor[grande_setor] ), dim_subsetor[grande_setor], ", " ),
+    "Todos os setores"
+)
+
+Fonte =
+"Fonte: RAIS – Estabelecimentos (Ministério do Trabalho). Recorte: São José dos Campos. "
+    & "Localização pelo CEP do estabelecimento."
+
+// ---------- Cor por grande setor (Formatação condicional > Valor do campo)
+Cor do setor =
+SWITCH (
+    SELECTEDVALUE ( dim_subsetor[grande_setor] ),
+    "Indústria", "#3558A8",
+    "Construção", "#B8700F",
+    "Comércio", "#BC3A58",
+    "Serviços", "#23806A",
+    "Adm. pública", "#7152A3",
+    "Agropecuária", "#6F7A1C",
+    "#8A989C"
+)

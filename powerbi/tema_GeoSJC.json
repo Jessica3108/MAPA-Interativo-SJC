@@ -1,0 +1,37 @@
+{
+  "name": "GeoSJC",
+  "dataColors": ["#3558A8", "#B8700F", "#BC3A58", "#23806A", "#7152A3", "#6F7A1C", "#0E5A6E", "#8A989C", "#78AFBA", "#E0A14A"],
+  "foreground": "#17262B",
+  "foregroundNeutralSecondary": "#5B6B70",
+  "foregroundNeutralTertiary": "#8A989C",
+  "background": "#FBFCFC",
+  "backgroundLight": "#F1F5F4",
+  "backgroundNeutral": "#D3DCDA",
+  "tableAccent": "#0E5A6E",
+  "good": "#23806A",
+  "neutral": "#B8700F",
+  "bad": "#BC3A58",
+  "maximum": "#0E5A6E",
+  "center": "#78AFBA",
+  "minimum": "#E1ECEC",
+  "textClasses": {
+    "title": { "fontFace": "Segoe UI Semibold", "fontSize": 13, "color": "#17262B" },
+    "header": { "fontFace": "Segoe UI Semibold", "fontSize": 12, "color": "#17262B" },
+    "label": { "fontFace": "Segoe UI", "fontSize": 10, "color": "#5B6B70" },
+    "callout": { "fontFace": "Segoe UI Semibold", "fontSize": 28, "color": "#0E5A6E" }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [{ "show": true, "color": { "solid": { "color": "#FFFFFF" } }, "transparency": 0 }],
+        "border": [{ "show": true, "color": { "solid": { "color": "#D3DCDA" } }, "radius": 6 }],
+        "dropShadow": [{ "show": false }]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [{ "color": { "solid": { "color": "#EDF1F0" } }, "transparency": 0 }]
+      }
+    }
+  }
+}
